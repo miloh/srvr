@@ -111,6 +111,18 @@ impl HttpSource {
     }
 }
 
+#[cfg_attr(feature = "server", derive(FromRow))]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct DeviceModel {
+    pub id: i64,
+    pub name: String,
+    pub width: i64,
+    pub height: i64,
+    pub is_virtual: bool,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct HttpSourceResult {
     pub source_name: String,

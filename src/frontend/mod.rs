@@ -4,7 +4,7 @@ pub mod server_fns;
 
 use dioxus::prelude::*;
 
-use pages::{Dashboard, DeviceDetail, Devices, Login, Setup, TemplateEditor, Templates, Users};
+use pages::{Dashboard, DeviceDetail, DeviceModels, Devices, Login, Setup, TemplateEditor, Templates, Users};
 use server_fns::{check_auth, check_needs_setup};
 
 #[derive(Routable, Clone, PartialEq, Debug)]

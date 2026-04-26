@@ -590,4 +590,29 @@ pub async fn get_server_info() -> Result<ServerInfo, ServerFnError> {
         prometheus_url,
         port: 8080,
     })
+#[server]
+pub async fn get_device_models() -> Result<Vec<DeviceModel>, ServerFnError> {
+    crate::db::get_device_models()
+        .await
+        .map_err(|e| ServerFnError::new(e.to_string()))
+}
+
+#[server]
+pub async fn create_device_model(
+    name: String,
+    width: i64,
+    height: i64,
+    is_virtual: bool,
+) -> Result<DeviceModel, ServerFnError> {
+    crate::db::create_device_model(&name, width, height, is_virtual)
+        .await
+        .map_err(|e| ServerFnError::new(format!("Failed to create device model: {e}")))
+}
+
+#[server]
+pub async fn delete_device_model(id: i64) -> Result<(), ServerFnError> {
+    crate::db::delete_device_model(id)
+        .await
+        .map_err(|e| ServerFnError::new(e.to_string()))
+}
 }

@@ -7,6 +7,12 @@ use sqlx::{
 };
 
 use crate::models::{
+    Device, DeviceLog, DeviceLogEntry, DeviceModel, HttpSource,
+    PrometheusQuery, Template, User,
+};
+
+use crate::models::{
+    Device, DeviceLog, DeviceLogEntry, DeviceModel, HttpSource,
     Device, DeviceLog, DeviceLogEntry, HttpSource, PrometheusQuery, Template, User,
 };
 
@@ -526,4 +532,50 @@ pub async fn delete_user(id: i64) -> Result<(), sqlx::error::Error> {
         .execute(get())
         .await?;
     Ok(())
+// -- Device Models --
+
+pub async fn get_device_models() -> Result<Vec<DeviceModel>, sqlx::error::Error> {
+    sqlx::query_as(
+        "SELECT id, name, width, height, is_virtual, created_at, updated_at \
+         FROM device_models ORDER BY is_virtual ASC, name ASC"
+    )
+    .fetch_all(get())
+    .await
+}
+
+pub async fn get_device_model(id: i64) -> Result<DeviceModel, sqlx::error::Error> {
+    sqlx::query_as(
+        "SELECT id, name, width, height, is_virtual, created_at, updated_at \
+         FROM device_models WHERE id = ?"
+    )
+    .bind(id)
+    .fetch_one(get())
+    .await
+}
+
+pub async fn create_device_model(
+    name: &str,
+    width: i64,
+    height: i64,
+    is_virtual: bool,
+) -> Result<DeviceModel, sqlx::error::Error> {
+    sqlx::query_as(
+        "INSERT INTO device_models (name, width, height, is_virtual) \
+         VALUES (?, ?, ?, ?) RETURNING *"
+    )
+    .bind(name)
+    .bind(width)
+    .bind(height)
+    .bind(is_virtual)
+    .fetch_one(get())
+    .await
+}
+
+pub async fn delete_device_model(id: i64) -> Result<(), sqlx::error::Error> {
+    sqlx::query("DELETE FROM device_models WHERE id = ?")
+        .bind(id)
+        .execute(get())
+        .await?;
+    Ok(())
+}
 }

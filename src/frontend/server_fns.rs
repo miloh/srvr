@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::models::{
     AuthenticatedUser, Device, DeviceLog, HttpSource, HttpSourceResult, PrometheusQuery,
-    PrometheusQueryResult, RenderContext, Template,
+    PrometheusQueryResult, RenderContext, Template, DeviceModel
 };
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]

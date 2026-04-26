@@ -528,8 +528,9 @@ pub async fn delete_user(id: i64) -> Result<(), sqlx::error::Error> {
         .execute(get())
         .await?;
     Ok(())
-// -- Device Models --
+}
 
+// -- Device Models --
 pub async fn get_device_models() -> Result<Vec<DeviceModel>, sqlx::error::Error> {
     sqlx::query_as(
         "SELECT id, name, width, height, is_virtual, created_at, updated_at \

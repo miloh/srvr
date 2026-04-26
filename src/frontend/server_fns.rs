@@ -590,6 +590,8 @@ pub async fn get_server_info() -> Result<ServerInfo, ServerFnError> {
         prometheus_url,
         port: 8080,
     })
+}
+
 #[server]
 pub async fn get_device_models() -> Result<Vec<DeviceModel>, ServerFnError> {
     crate::db::get_device_models()
@@ -614,5 +616,4 @@ pub async fn delete_device_model(id: i64) -> Result<(), ServerFnError> {
     crate::db::delete_device_model(id)
         .await
         .map_err(|e| ServerFnError::new(e.to_string()))
-}
 }

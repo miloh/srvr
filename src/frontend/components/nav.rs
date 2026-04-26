@@ -16,6 +16,7 @@ pub fn Nav() -> Element {
                     NavLink { to: Route::Dashboard {}, label: "Dashboard" }
                     NavLink { to: Route::Devices {}, label: "Devices" }
                     NavLink { to: Route::Templates {}, label: "Templates" }
+                    NavLink { to: Route::DeviceModels {}, label: "Models" }
                     NavLink { to: Route::Users {}, label: "Users" }
                 }
                 form {

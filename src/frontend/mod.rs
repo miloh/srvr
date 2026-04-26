@@ -27,6 +27,8 @@ enum Route {
         TemplateEditor { id: i64 },
         #[route("/users")]
         Users {},
+        #[route("/device-models")]
+        DeviceModels {},
     #[end_layout]
     #[route("/:..segments")]
     NotFound { segments: Vec<String> },

@@ -11,10 +11,6 @@ use crate::models::{
     PrometheusQuery, Template, User,
 };
 
-use crate::models::{
-    Device, DeviceLog, DeviceLogEntry, DeviceModel, HttpSource,
-    Device, DeviceLog, DeviceLogEntry, HttpSource, PrometheusQuery, Template, User,
-};
 
 static POOL: OnceLock<SqlitePool> = OnceLock::new();
 

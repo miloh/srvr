@@ -71,7 +71,7 @@ pub fn Devices() -> Element {
                 h1 { class: "text-3xl font-bold text-gray-900 tracking-tight", "Devices" }
                 p { class: "text-gray-500 mt-1", "Registered TRMNL devices" }
             }
-            AddSimnulatedDevice { device_list: device_list }
+            AddSimulatedDevice { device_list: device_list }
         }
 
         match current_devices {

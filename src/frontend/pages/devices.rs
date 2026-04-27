@@ -1,10 +1,11 @@
 use dioxus::prelude::*;
 
-use crate::frontend::server_fns::{
-    delete_device, get_device_by_id, get_device_logs, get_devices, get_screen_preview_for_template,
-    get_templates, update_device_maximum_compatibility, update_device_template,
+use crate::frontend::server_fns::{ 
+    create_simulated_device, delete_device, get_device_by_id, get_device_logs,
+    get_device_models, get_devices, get_screen_preview_for_template, get_templates,
+    update_device_maximum_compatibility, update_device_template,
 };
-use crate::models::{Device, DeviceLog};
+use crate::models::{Device, DeviceLog, DeviceModel};
 
 #[component]
 pub fn Devices() -> Element {
@@ -70,6 +71,7 @@ pub fn Devices() -> Element {
                 h1 { class: "text-3xl font-bold text-gray-900 tracking-tight", "Devices" }
                 p { class: "text-gray-500 mt-1", "Registered TRMNL devices" }
             }
+            AddSimnulatedDevice { device_list: device_list }
         }
 
         match current_devices {
@@ -597,6 +599,77 @@ fn MaxCompatibilityToggle(device_id: i64, current_value: bool) -> Element {
                 }
             }
             p { class: "text-xs text-gray-400 mt-2", "Enable if the device requires compatibility mode for rendering." }
+        }
+    }
+}
+#[component]
+fn AddSimulatedDevice(mut device_list: Signal<Option<Vec<Device>>>) -> Element {
+    let models = use_resource(move || get_device_models());
+    let mut selected_id: Signal<Option<i64>> = use_signal(|| None);
+    let mut creating = use_signal(|| false);
+    let mut error_msg: Signal<Option<String>> = use_signal(|| None);
+
+    // Get the model list, filtering for display
+    let model_list: Vec<DeviceModel> = match models() {
+        Some(Ok(ms)) => ms,
+        _ => vec![],
+    };
+
+    // Auto-select first model if nothing selected
+    if selected_id().is_none() {
+        if let Some(first) = model_list.first() {
+            selected_id.set(Some(first.id));
+        }
+    }
+
+    if model_list.is_empty() {
+        return rsx! {};
+    }
+
+    rsx! {
+        div { class: "flex items-center gap-2",
+            select {
+                class: "text-sm border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300",
+                onchange: move |evt| {
+                    if let Ok(id) = evt.value().parse::<i64>() {
+                        selected_id.set(Some(id));
+                    }
+                },
+                for m in &model_list {
+                    option {
+                        value: "{m.id}",
+                        selected: selected_id() == Some(m.id),
+                        "{m.name} ({m.width}\u{00d7}{m.height})"
+                    }
+                }
+            }
+            button {
+                class: "px-4 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50",
+                disabled: creating() || selected_id().is_none(),
+                onclick: move |_| {
+                    if let Some(model_id) = selected_id() {
+                        creating.set(true);
+                        error_msg.set(None);
+                        spawn(async move {
+                            match create_simulated_device(model_id).await {
+                                Ok(new_device) => {
+                                    let mut list = device_list.write();
+                                    let devs = list.get_or_insert_with(Vec::new);
+                                    devs.push(new_device);
+                                }
+                                Err(e) => {
+                                    error_msg.set(Some(format!("{e}")));
+                                }
+                            }
+                            creating.set(false);
+                        });
+                    }
+                },
+                if creating() { "Creating..." } else { "+ Simulated Device" }
+            }
+            if let Some(ref err) = error_msg() {
+                span { class: "text-sm text-red-500", "{err}" }
+            }
         }
     }
 }

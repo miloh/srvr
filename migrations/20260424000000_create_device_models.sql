@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS device_models (
 );
 
 -- Seed initial device profiles
-INSERT INTO device_models (name, width, height, is_virtual) VALUES
+INSERT OR IGNORE INTO device_models (name, width, height, is_virtual) VALUES
     ('TRMNL OG 7.5"', 800, 480, 0),
     ('TRMNL X 10.3"', 1872, 1404, 0),
     ('Adafruit MagTag 2.9"', 296, 128, 0),

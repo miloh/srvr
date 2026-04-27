@@ -156,7 +156,7 @@ fn AddDeviceModelForm(mut model_list: Signal<Option<Vec<DeviceModel>>>) -> Eleme
                                     is_virtual.set(false);
                                 }
                                 Err(e) => {
-                                    error_msg.set(Some(e.to_string()));
+                                    error_msg.set(Some(format!("{e}")));
                                 }
                             }
                             saving.set(false);

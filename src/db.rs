@@ -575,4 +575,3 @@ pub async fn delete_device_model(id: i64) -> Result<(), sqlx::error::Error> {
         .await?;
     Ok(())
 }
-}

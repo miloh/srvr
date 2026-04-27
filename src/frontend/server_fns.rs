@@ -617,3 +617,44 @@ pub async fn delete_device_model(id: i64) -> Result<(), ServerFnError> {
         .await
         .map_err(|e| ServerFnError::new(e.to_string()))
 }
+#[server]
+pub async fn create_simulated_device(device_model_id: i64) -> Result<Device, ServerFnError> {
+    use std::io::Read;
+
+    // Look up the device model
+    let model = crate::db::get_device_model(device_model_id)
+        .await
+        .map_err(|e| ServerFnError::new(format!("Device model not found: {e}")))?;
+
+    // Generate access token (same pattern as api.rs)
+    let mut buf = [0u8; 32];
+    std::fs::File::open("/dev/urandom")
+        .and_then(|mut f| f.read_exact(&mut buf).map(|_| ()))
+        .map_err(|e| ServerFnError::new(format!("Failed to generate token: {e}")))?;
+    let access_token: String = buf.iter().map(|b| format!("{:02x}", b)).collect();
+
+    // Generate unique fake MAC
+    let mac: String = buf[..6]
+        .iter()
+        .map(|b| format!("{:02X}", b))
+        .collect::<Vec<_>>()
+        .join(":");
+    let mac_address = format!("SIM-{}", mac);
+
+    // Generate friendly name
+    let friendly_id = names::Generator::default().next().unwrap();
+
+    crate::db::create_device(
+        &access_token,
+        Some(mac_address.as_str()),
+        Some(model.name.as_str()),
+        &friendly_id,
+        None,
+        Some(model.width),
+        Some(model.height),
+        None,
+        None,
+    )
+    .await
+    .map_err(|e| ServerFnError::new(format!("Failed to create simulated device: {e}")))
+}
